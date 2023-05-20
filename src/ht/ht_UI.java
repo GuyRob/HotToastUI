@@ -6,6 +6,13 @@ import java.util.Scanner;
 
 public class ht_UI {
     public static JFrame htFrame = new JFrame();
+    public static JLabel textLabel = new JLabel("");
+    public static JTextField inputField = new JTextField(20);
+    public static JButton submitButton = new JButton("Submit");
+
+    public static final int RIGHT_ALIGN = -150;
+
+
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -17,6 +24,8 @@ public class ht_UI {
     public static void createFrame() {
         // Creating Frame
         htFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        htFrame.setLayout(new FlowLayout());
+
 
         // Adjusting size and title
         htFrame.setTitle("HOT TOAST");
@@ -35,23 +44,31 @@ public class ht_UI {
         // Set the background label as the content pane of the frame
         htFrame.setContentPane(backgroundLabel);
 
+        // Adjust text and buttons location
+        // Text Label
+        textLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        textLabel.setVerticalAlignment(SwingConstants.TOP);
+        textLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        textLabel.setForeground(Color.WHITE);
+        textLabel.setBounds(htFrame.getWidth() - RIGHT_ALIGN, 20, 280, 50);
+        htFrame.add(textLabel);
+
+        // Input Field
+        inputField.setBounds(htFrame.getWidth() - RIGHT_ALIGN, htFrame.getHeight() - 80, 200, 30); // Position the inputField in the bottom right
+        htFrame.add(inputField);
+
+        // Button
+        submitButton.setBounds(htFrame.getWidth() - RIGHT_ALIGN, htFrame.getHeight() - 40, 80, 30); // Position the submitButton below the inputField
+        htFrame.add(submitButton);
+
+        // Make visible
         htFrame.setVisible(true);
     }
 
     public static int ageUI() {
         // Add text
-        JLabel textLabel = new JLabel("So what is your age? (5-100)");
-        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLabel.setVerticalAlignment(SwingConstants.CENTER);
-        textLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        textLabel.setForeground(Color.WHITE);
-        textLabel.setBounds(1000, 100, 500, 50); // Set the position and size of the text label
-        htFrame.add(textLabel);
+        textLabel.setText("<html><body style='width: 400px'>" + "So what is your age? (5-100)" + "</body></html>");
 
-        // Input
-        JTextField inputField = new JTextField(20);
-        inputField.setBounds(1000, 200, 200, 30); // Set the position and size of the input field
-        htFrame.add(inputField);
 
 
         // COPY age function
