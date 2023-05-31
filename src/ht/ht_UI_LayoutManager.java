@@ -78,11 +78,15 @@ public class ht_UI_LayoutManager {
         northFlowLayoutPanel.add(systemTextLabel);
 
         // Down - southBorderLayoutPanel
-        inputField.setBounds(2, 2, 2, 2);
-        submitButton.setBounds(2, 2, 2, 2);
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        inputPanel.add(inputField);
+        inputPanel.add(submitButton);
 
-        southBorderLayoutPanel.add(submitButton);
-        southBorderLayoutPanel.add(inputField);
+
+        southBorderLayoutPanel.add(inputPanel, BorderLayout.SOUTH);
+
+//        southBorderLayoutPanel.add(submitButton);
+//        southBorderLayoutPanel.add(inputField);
 
         submitButton.addActionListener(submitButtonListener);
 
