@@ -5,13 +5,30 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Scanner;
 
-public class ht_UI {
-    /** JFrame */
-    public static JFrame htFrame = new JFrame();
-    public static JLabel activeTextLabel = new JLabel("");
-    public static JLabel systemTextLabel = new JLabel("a");
+public class ht_UI_LayoutManager {
+    /** Layout Manager */
+    private static JPanel northFlowLayoutPanel;
+    private static JPanel southBorderLayoutPanel;
+    private static JPanel centerGridBagLayoutPanel;
+    private static JPanel westBoxLayoutPanel;
+    private static JPanel eastGridLayoutPanel;
+
+    private static final JButton northButton = new JButton("North Button");
+    private static final JButton southButton = new JButton("South Button");
+    private static final JButton centerButton = new JButton("Center Button");
+    private static final JButton eastButton = new JButton("East Button");
+
+    private static final JButton menuButton1 = new JButton("Menu Item 1");
+    private static final JButton menuButton2 = new JButton("Menu Item 2");
+    private static final JButton menuButton3 = new JButton("Menu Item 3");
+    private static final JButton menuButton4 = new JButton("Menu Item 4");
+    private static final JButton menuButton5 = new JButton("Menu Item 5");
+
+    /** JFrame - App */
+//    public static JFrame htFrame = new JFrame(); // DELETE?
+    public static JLabel activeTextLabel = new JLabel("TEST");
+    public static JLabel systemTextLabel = new JLabel("\n\na");
 
 
     public static JTextField inputField = new JTextField(20);
@@ -23,19 +40,91 @@ public class ht_UI {
     // Declare a shared object for synchronization
     private static final Object lock = new Object();
 
+    /** Functions - Layout Manager */
+    public static void initialLayout_Main() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(
+                        UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException
+                    | InstantiationException
+                    | IllegalAccessException
+                    | UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
 
-    public static final int RIGHT_ALIGN = -200;
-    /** End JFrame */
+            TestingLayoutManagers();
+        });
+    }
+
+    public static void TestingLayoutManagers() {
+        northFlowLayoutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        southBorderLayoutPanel = new JPanel(new BorderLayout());
+        centerGridBagLayoutPanel = new JPanel(new GridBagLayout());
+        eastGridLayoutPanel = new JPanel(new GridLayout(1, 1));
+        Box box = Box.createVerticalBox();
+        westBoxLayoutPanel = new JPanel();
+
+        // Up - northFlowLayoutPanel
+        // Active Text Label
+        activeTextLabel.setFont(new Font("Courier", Font.BOLD, 24));
+        activeTextLabel.setForeground(Color.BLACK);
+        northFlowLayoutPanel.add(activeTextLabel);
+
+        // System Text Label
+        systemTextLabel.setFont(new Font("Courier", Font.BOLD, 24));
+        systemTextLabel.setForeground(Color.BLACK);
+//        systemTextLabel.setVisible(false);
+        northFlowLayoutPanel.add(systemTextLabel);
+
+        // Down - southBorderLayoutPanel
+        inputField.setBounds(2, 2, 2, 2);
+        submitButton.setBounds(2, 2, 2, 2);
+
+        southBorderLayoutPanel.add(submitButton);
+        southBorderLayoutPanel.add(inputField);
+
+        submitButton.addActionListener(submitButtonListener);
+
+        southBorderLayoutPanel.setBorder(BorderFactory.createTitledBorder("Please enter input"));
+
+        // Center - Default Frame
+        JFrame frame = new JFrame("HOT TOAST");
+        frame.setLayout(new BorderLayout());      // This is the deafault layout
+        frame.add(northFlowLayoutPanel, BorderLayout.PAGE_START);
+        frame.add(southBorderLayoutPanel, BorderLayout.PAGE_END);
+        frame.add(centerGridBagLayoutPanel, BorderLayout.CENTER);
+        frame.add(eastGridLayoutPanel, BorderLayout.LINE_END);
+        frame.add(westBoxLayoutPanel, BorderLayout.LINE_START);
+
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        ImageIcon iconimage = new ImageIcon("extFiles\\ht_icon.png");
+        frame.setIconImage(iconimage.getImage());
+        frame.setTitle("HOT TOAST");
+
+        // Background
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                ImageIcon backgroundimage = new ImageIcon("extFiles\\WP_FoodTruck.jpg");
+                Image image = backgroundimage.getImage();
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        frame.add(backgroundPanel);
 
 
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
 
-    public static Scanner scan = new Scanner(System.in);
+    }
 
+    /** Functions - JFrame - App */
     private static ActionListener submitButtonListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -64,108 +153,6 @@ public class ht_UI {
         timer.setRepeats(false);
         timer.start();
     }
-
-    public static void createFrame() {
-        // Creating Frame
-        htFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        htFrame.setLayout(new FlowLayout());
-
-        // Adjusting size and title
-        htFrame.setTitle("HOT TOAST");
-        htFrame.setSize(1024, 720);
-        htFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        // Icon
-        ImageIcon iconimage = new ImageIcon("extFiles\\ht_icon.png");
-        htFrame.setIconImage(iconimage.getImage());
-
-        // Background
-        JPanel backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                ImageIcon backgroundimage = new ImageIcon("extFiles\\WP_FoodTruck.jpg");
-                Image image = backgroundimage.getImage();
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        backgroundPanel.setLayout(null); // Use absolute positioning for components
-        htFrame.setContentPane(backgroundPanel);
-
-        // Adjust text and buttons location
-        // Active Text Label
-        activeTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        activeTextLabel.setVerticalAlignment(SwingConstants.TOP);
-        activeTextLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        activeTextLabel.setForeground(Color.WHITE);
-        activeTextLabel.setBounds(htFrame.getWidth() - RIGHT_ALIGN, 20, 280, 50);
-        backgroundPanel.add(activeTextLabel);
-
-
-        // Active Text Label
-        activeTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        activeTextLabel.setVerticalAlignment(SwingConstants.TOP);
-        activeTextLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        activeTextLabel.setForeground(Color.WHITE);
-        activeTextLabel.setBounds(htFrame.getWidth() - RIGHT_ALIGN, 20, 280, 50);
-        backgroundPanel.add(activeTextLabel);
-
-        // LayeredPane (SystemText)
-         systemLayeredPane = new JLayeredPane(){
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-
-                Graphics2D g2d = (Graphics2D) g.create();
-
-                // Set the desired opacity level (0.0 - 1.0)
-                float opacity = 0.8f;
-
-                // Create an AlphaComposite with the specified opacity
-                AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity);
-                g2d.setComposite(alphaComposite);
-
-                // Set the desired background color
-                g2d.setColor(new Color(200,89,42));
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-
-                g2d.dispose();
-            }
-        };
-
-
-        systemLayeredPane.setBounds(300, 720, htFrame.getWidth()-500, 50);
-        systemLayeredPane.setOpaque(true); // Set this to true to make the pane visible.
-        backgroundPanel.add(systemLayeredPane);
-        systemLayeredPane.setVisible(false);
-
-
-        // System Text Label
-        systemTextLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        systemTextLabel.setForeground(Color.WHITE);
-        systemTextLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        systemTextLabel.setVerticalAlignment(SwingConstants.CENTER);
-        systemTextLabel.setBounds(0, 0, systemLayeredPane.getWidth(), systemLayeredPane.getHeight());
-        systemTextLabel.setVisible(false);
-
-
-        systemLayeredPane.add(systemTextLabel, JLayeredPane.DEFAULT_LAYER); // Add systemTextLabel to systemLayeredPane
-
-        // Input Field
-        inputField.setBounds(htFrame.getWidth() - RIGHT_ALIGN, htFrame.getHeight() - 80, 200, 30); // Position the inputField in the bottom right
-        backgroundPanel.add(inputField);
-
-        // Button
-        submitButton.setBounds(htFrame.getWidth() - RIGHT_ALIGN, htFrame.getHeight() - 40, 80, 30); // Position the submitButton below the inputField
-        backgroundPanel.add(submitButton);
-
-        submitButton.addActionListener(submitButtonListener);
-
-
-        htFrame.setVisible(true);
-    }
-
-
 
     public static int ageUI() {
         // Add text
@@ -292,7 +279,7 @@ public class ht_UI {
                             for (String currentExtra : EXTRAS_MENU.keySet()) {
                                 if (currentUserExtraSplit.equals(currentExtra)) {
 //                                    System.out.println(ANSI_GREEN + currentUserExtraSplit + " added!" + ANSI_RESET);
-                                    showSystemText("<html><font color='green'>" + ANSI_GREEN + currentUserExtraSplit + " added!" + ANSI_RESET + "</font></html>", 3);
+                                    showSystemText("<html><font color='green'>" + currentUserExtraSplit + " added!" + "</font></html>", 3);
 
                                     userExtrasPrice += EXTRAS_MENU.get(currentUserExtraSplit);
                                     validExtra = true;
@@ -329,8 +316,8 @@ public class ht_UI {
                 }
 
 
-        return userExtrasPrice;
-        }
+                return userExtrasPrice;
+            }
         }
     }
 
@@ -349,8 +336,5 @@ public class ht_UI {
         return menu;
 
     }
-
-
-
 
 }
