@@ -1,4 +1,4 @@
-package ht;
+package ht.others;
 
 import javax.swing.*;
 import java.awt.*;

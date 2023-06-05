@@ -1,4 +1,4 @@
-package ht;
+package ht.others;
 
 import java.util.Arrays;
 import java.util.HashMap;

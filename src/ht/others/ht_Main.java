@@ -1,4 +1,4 @@
-package ht;
+package ht.others;
 
 public class ht_Main {
     public static void main(String[] args) {
