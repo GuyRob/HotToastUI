@@ -1,15 +1,20 @@
 package ht;
 
-import javax.swing.*;
-
 public class ht_UIMain {
     public static void main(String[] args) throws InterruptedException {
-        ht_UI_LayoutManager.initialLayout_Main();
+        boolean tryAgain = true;
 
+        ht_UI_LayoutManager.createUI_Main(); // Initial UI
 
-//        ht_UI.createFrame();
-//        int ageDiscount = ht_UI.ageUI();
-//        int extrasPrice = ht_UI.extrasUI();
+        while (tryAgain) {
+            int ageDiscount = ht_UI_LayoutManager.ageUI();
+            int extrasPrice = ht_UI_LayoutManager.extrasUI();
+            int drinksPrice = ht_UI_LayoutManager.drinkUI();
+
+            tryAgain = ht_UI_LayoutManager.totalOrderUI(ageDiscount, extrasPrice, drinksPrice); // Print total order + ask if try again
+        }
 
     }
+
+
 }

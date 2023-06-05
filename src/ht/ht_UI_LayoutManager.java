@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ht_UI_LayoutManager {
@@ -11,37 +14,24 @@ public class ht_UI_LayoutManager {
     private static JPanel northFlowLayoutPanel;
     private static JPanel southBorderLayoutPanel;
     private static JPanel centerGridBagLayoutPanel;
-    private static JPanel westBoxLayoutPanel;
+//    private static JPanel westBoxLayoutPanel;
     private static JPanel eastGridLayoutPanel;
 
-    private static final JButton northButton = new JButton("North Button");
-    private static final JButton southButton = new JButton("South Button");
-    private static final JButton centerButton = new JButton("Center Button");
-    private static final JButton eastButton = new JButton("East Button");
-
-    private static final JButton menuButton1 = new JButton("Menu Item 1");
-    private static final JButton menuButton2 = new JButton("Menu Item 2");
-    private static final JButton menuButton3 = new JButton("Menu Item 3");
-    private static final JButton menuButton4 = new JButton("Menu Item 4");
-    private static final JButton menuButton5 = new JButton("Menu Item 5");
-
     /** JFrame - App */
-//    public static JFrame htFrame = new JFrame(); // DELETE?
-    public static JLabel activeTextLabel = new JLabel("TEST");
-    public static JLabel systemTextLabel = new JLabel("\n\na");
+    public static JLabel activeTextLabel = new JLabel("ACTIVETEXT");
+    public static JLabel systemTextLabel = new JLabel("SYSTEMTEXT");
 
-
-    public static JTextField inputField = new JTextField(20);
+    public static JTextField inputField = new JTextField(40);
     public static JButton submitButton = new JButton("Submit");
     public static String submitButtonResult;
 
-    public static JLayeredPane systemLayeredPane = new JLayeredPane();
+//    public static JLayeredPane systemLayeredPane = new JLayeredPane();
 
     // Declare a shared object for synchronization
-    private static final Object lock = new Object();
+    private static final Object lock = new Object(); // LOCK
 
     /** Functions - Layout Manager */
-    public static void initialLayout_Main() {
+    public static void createUI_Main() {
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(
@@ -53,57 +43,70 @@ public class ht_UI_LayoutManager {
                 e.printStackTrace();
             }
 
-            TestingLayoutManagers();
+            configurationUI(); // Calling configuration UI
         });
     }
 
-    public static void TestingLayoutManagers() {
+    public static void configurationUI() {
         northFlowLayoutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        northFlowLayoutPanel.setLayout(new BoxLayout(northFlowLayoutPanel, BoxLayout.Y_AXIS));
+        northFlowLayoutPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         southBorderLayoutPanel = new JPanel(new BorderLayout());
         centerGridBagLayoutPanel = new JPanel(new GridBagLayout());
         eastGridLayoutPanel = new JPanel(new GridLayout(1, 1));
-        Box box = Box.createVerticalBox();
-        westBoxLayoutPanel = new JPanel();
 
         // Up - northFlowLayoutPanel
         // Active Text Label
         activeTextLabel.setFont(new Font("Courier", Font.BOLD, 24));
         activeTextLabel.setForeground(Color.BLACK);
-        northFlowLayoutPanel.add(activeTextLabel);
+        activeTextLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel activeTextPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a nested panel for centering the activeTextLabel
+        activeTextPanel.add(activeTextLabel);
+        northFlowLayoutPanel.add(activeTextPanel);
 
         // System Text Label
         systemTextLabel.setFont(new Font("Courier", Font.BOLD, 24));
         systemTextLabel.setForeground(Color.BLACK);
-//        systemTextLabel.setVisible(false);
-        northFlowLayoutPanel.add(systemTextLabel);
+        systemTextLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel systemTextPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        systemTextPanel.add(systemTextLabel);
+        northFlowLayoutPanel.add(systemTextPanel);
+
+        systemTextLabel.setVisible(false);
 
         // Down - southBorderLayoutPanel
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         inputPanel.add(inputField);
         inputPanel.add(submitButton);
 
-
         southBorderLayoutPanel.add(inputPanel, BorderLayout.SOUTH);
-
-//        southBorderLayoutPanel.add(submitButton);
-//        southBorderLayoutPanel.add(inputField);
-
         submitButton.addActionListener(submitButtonListener);
-
         southBorderLayoutPanel.setBorder(BorderFactory.createTitledBorder("Please enter input"));
+
+
+        inputField.addKeyListener(new KeyAdapter() { // Listener to 'ENTER'
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    submitButton.doClick();
+
+                }
+            }
+        });
 
         // Center - Default Frame
         JFrame frame = new JFrame("HOT TOAST");
-        frame.setLayout(new BorderLayout());      // This is the deafault layout
+        frame.setLayout(new BorderLayout());      // This is the default layout
         frame.add(northFlowLayoutPanel, BorderLayout.PAGE_START);
         frame.add(southBorderLayoutPanel, BorderLayout.PAGE_END);
         frame.add(centerGridBagLayoutPanel, BorderLayout.CENTER);
         frame.add(eastGridLayoutPanel, BorderLayout.LINE_END);
-        frame.add(westBoxLayoutPanel, BorderLayout.LINE_START);
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -123,9 +126,6 @@ public class ht_UI_LayoutManager {
         };
         frame.add(backgroundPanel);
 
-
-
-
     }
 
     /** Functions - JFrame - App */
@@ -134,23 +134,22 @@ public class ht_UI_LayoutManager {
         public void actionPerformed(ActionEvent e) {
             String inputText = inputField.getText();
             submitButtonResult = inputText;
+            inputField.setText(""); // Clear the inputField
             synchronized (lock) {
                 lock.notify();
             }
         }
     };
 
-    private static void showSystemText(String text, int durationInSeconds) {
+    private static void showSystemText(String text, int durationInSeconds) throws InterruptedException {
         systemTextLabel.setText(text);
         systemTextLabel.setVisible(true);
-        systemLayeredPane.setVisible(true);
 
-
-        Timer timer = new Timer(durationInSeconds * 1000, new ActionListener() {
+        // Need to use this timer to not cause a sleep in all app
+        Timer timer = new Timer(durationInSeconds * 1500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 systemTextLabel.setVisible(false);
-                systemLayeredPane.setVisible(false);
                 ((Timer) e.getSource()).stop();
             }
         });
@@ -158,22 +157,20 @@ public class ht_UI_LayoutManager {
         timer.start();
     }
 
-    public static int ageUI() {
-        // Add text
-        activeTextLabel.setText("<html><body style='width: 400px'>" + "So what is your age? (5-100)" + "</body></html>");
+    public static int ageUI() throws InterruptedException {
+        activeTextLabel.setText("<html><font color='black'>So what is your age? (5-100)</font></html>");         // Add text
+
         int discount = 0;
         boolean validAge = false;
 
 
-        synchronized (lock) {
-            while (true) {
-                try {
-                    lock.wait();  // Wait until notify() is called
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        synchronized (lock) { // LOCK
+            while (true) { // LOCK
 
-                String inpAge = inputField.getText();
+                lock.wait();  // Wait until notify() is called
+
+
+                String inpAge = submitButtonResult;
 
                 // Numbers only validation
                 if (inpAge.matches("^[0-9]*$")) {
@@ -200,19 +197,6 @@ public class ht_UI_LayoutManager {
 
                 }
 
-                // @TODO check if should be deleted or not
-                // Reattach ActionListener to submitButton
-//                submitButton.addActionListener(new ActionListener() {
-//                    @Override
-//                    public void actionPerformed(ActionEvent e) {
-//                        synchronized (lock) {
-//                            lock.notify();  // Notify the waiting thread
-//                        }
-//                    }
-//                });
-
-                inputField.setText(""); // Clear the inputField
-
                 if (validAge) {
                     break;  // Exit the loop if a valid age is entered
                 }
@@ -224,36 +208,31 @@ public class ht_UI_LayoutManager {
     // END ageUI
 
     public static int extrasUI() throws InterruptedException {
-        activeTextLabel.setText(activeTextLabel.getText() + "what do you want to drink?");
+        activeTextLabel.setText(activeTextLabel.getText() + "do you want extras? (y/n)");
 
         int userExtrasPrice=0;
-        synchronized (lock) {
-            while (true) {
-                try {
-                    lock.wait();  // Wait until notify() is called
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                String inpAnswer = inputField.getText();
+        synchronized (lock) { // LOCK
+            while (true) { // LOCK
+                lock.wait();  // Wait until notify() is called
 
+                String inpAnswer = submitButtonResult;
                 char answer = inpAnswer.charAt(0);
-                System.out.println(answer);
 
                 // Ask again - 1
                 if (answer != 'y' && answer != 'Y') {
 //                    System.out.println(ANSI_YELLOW + "We have a good extras, want to try?" + ANSI_RESET);
-                    showSystemText("<html><font color='yellow'>We have a good extras, want to try?</font></html>", 3);
+                    showSystemText("<html><font color='orange'>We have a good extras, want to try?</font></html>", 3);
                     lock.wait();  // Wait until notify() is called
-                    inpAnswer = inputField.getText();
+                    inpAnswer = submitButtonResult;
                     answer = inpAnswer.charAt(0);
 
                     // Ask again - 2
                     if (answer != 'y' && answer != 'Y') {
 //                        System.out.println(ANSI_YELLOW + "Listen you must try it, add at least one?" + ANSI_RESET);
-                        showSystemText("<html><font color='yellow'>Listen you must try it, add at least one?</font></html>", 3);
+                        showSystemText("<html><font color='orange'>Listen you must try it, add at least one?</font></html>", 3);
 
                         lock.wait();  // Wait until notify() is called
-                        inpAnswer = inputField.getText();
+                        inpAnswer = submitButtonResult;
                         answer = inpAnswer.charAt(0);
                     }
                 }
@@ -261,16 +240,11 @@ public class ht_UI_LayoutManager {
                     boolean validExtra = false;
                     HashMap<String, Integer> EXTRAS_MENU = createExtrasMenu();
 
-//                    System.out.println("Which extras do you want?\nWe have: " + EXTRAS_MENU.keySet());
-                    activeTextLabel.setText("<html><body style='width: 400px'>" + "Which extras do you want?\nWe have: " + EXTRAS_MENU.keySet() + "</body></html>");
-
-
-                    // consume the newline character left over from the previous input
-//                    scan.nextLine();
+                    activeTextLabel.setText("<html><font color='black'>" + "Which extras do you want?\nWe have: " + EXTRAS_MENU.keySet() + "</font></html>");
 
                     while (!validExtra) {
                         lock.wait();  // Wait until notify() is called
-                        inpAnswer = inputField.getText();
+                        inpAnswer = submitButtonResult;
                         String userExtra = inpAnswer.toLowerCase();
                         userExtra = userExtra.replace(" ", "");
                         String[] userExtraSplit = userExtra.split(",");
@@ -282,9 +256,8 @@ public class ht_UI_LayoutManager {
                             }
                             for (String currentExtra : EXTRAS_MENU.keySet()) {
                                 if (currentUserExtraSplit.equals(currentExtra)) {
-//                                    System.out.println(ANSI_GREEN + currentUserExtraSplit + " added!" + ANSI_RESET);
                                     showSystemText("<html><font color='green'>" + currentUserExtraSplit + " added!" + "</font></html>", 3);
-
+                                    Thread.sleep(1000); // Sleep to fix print delay
                                     userExtrasPrice += EXTRAS_MENU.get(currentUserExtraSplit);
                                     validExtra = true;
                                     break;
@@ -294,26 +267,20 @@ public class ht_UI_LayoutManager {
                         }
 
                         if (validExtra) {
-//                            System.out.println("Do you want to add another extra?");
-                            activeTextLabel.setText("<html><body style='width: 400px'>" + "Do you want to add another extra?" + "</body></html>");
+                            activeTextLabel.setText("<html><font color='black'>" + "Do you want to add another extra?" + "</font></html>");
 
 
                             lock.wait();  // Wait until notify() is called
-                            inpAnswer = inputField.getText();
+                            inpAnswer = submitButtonResult;
                             answer = inpAnswer.charAt(0);
 
                             if (answer == 'y' || answer == 'Y') {
-//                                System.out.println("Which extra you want to add?");
-                                activeTextLabel.setText("<html><body style='width: 400px'>" + "Which extra you want to add?" + "</body></html>");
-
+                                activeTextLabel.setText("<html><font color='black'>Which extra you want to add?</font></html>");         // Add text
                                 validExtra = false;
-//                                // consume the newline character left over from the previous input
-//                                scan.nextLine();
+
                             }
                         } else {
-//                            System.out.println(ANSI_RED + "Your extras cannot be found, please try again!" + ANSI_RESET);
                             showSystemText("<html><font color='red'>Your extras cannot be found, please try again!</font></html>", 3);
-
                         }
                     }
 
@@ -340,5 +307,85 @@ public class ht_UI_LayoutManager {
         return menu;
 
     }
+
+    public static int drinkUI () throws InterruptedException {
+        activeTextLabel.setText("<html><font color='black'>Would you like to add drinks? (y/n)</font></html>");         // Add text
+
+        int DRINK_PRICE = 8;
+        String[] DRINK_NAMES = {"cola", "fanta"};
+        int userDrinksPrice = 0;
+
+        synchronized (lock) { // LOCK
+            while (true) { // LOCK
+                lock.wait(); // Wait until notify() is called
+
+
+                char answer = submitButtonResult.charAt(0);
+                if (answer != 'y' && answer != 'Y') {
+                    showSystemText("<html><font color='orange'>You'll be thirsty, add drink?</font></html>", 3);
+                    lock.wait();  // Wait until notify() is called
+                    answer = submitButtonResult.charAt(0);
+                }
+                if (answer == 'y' || answer == 'Y') {
+                    activeTextLabel.setText("<html><font color='black'>" + "What do you want to drink?  We have: " + Arrays.toString(DRINK_NAMES) + "</font></html>");         // Add text
+                    int drinksAmount = 0;
+                    boolean validDrink = false;
+                    while (!validDrink) {
+                        lock.wait();  // Wait until notify() is called
+                        String userDrink = submitButtonResult.toLowerCase();
+                        for (String currentDrink : DRINK_NAMES) {
+                            if (userDrink.equals(currentDrink)) {
+                                showSystemText("<html><font color='green'>" + userDrink + " added!</font></html>", 3);
+                                drinksAmount++;
+                                validDrink = true;
+                                break;
+                            }
+                        }
+                        if (!validDrink) {
+                            showSystemText("<html><font color='red'>Please enter a valid one drink!</font></html>", 3);
+                        } else {
+                            /** @ANOTHERDRINK - Enable/Disable another drink option: */
+                            activeTextLabel.setText("<html><font color='black'>Do you want to add another drink? (y/n)</font></html>");         // Add text
+                            lock.wait(); // Wait until notify() is called
+                            answer = submitButtonResult.charAt(0);
+                            if (answer == 'y' || answer == 'Y') {
+                                activeTextLabel.setText("<html><font color='black'>Which drink you want to add?</font></html>");         // Add text
+                                validDrink = false;
+                            }
+                        }
+                         /** @ANOTHERDRINK */
+
+                    }
+
+                    userDrinksPrice = drinksAmount * DRINK_PRICE;
+
+                }
+                return userDrinksPrice;
+            }
+        }
+    }
+
+    public static boolean totalOrderUI(int ageDiscount, int extrasPrice, int drinksPrice) throws InterruptedException {
+        boolean tryAgain = false;
+        int TOASTPRICE = 15;
+        int totalPrice = TOASTPRICE + ageDiscount + extrasPrice + drinksPrice;
+        System.out.println("Total for your toast: $" + totalPrice);
+        activeTextLabel.setText("<html><font color='green'>Total for your toast: $" + totalPrice + "</font><font color='navy'>\t[Do you want to order again? (y/n)]</font></html>");
+
+        synchronized (lock) { // LOCK
+            while (true) { // LOCK
+                lock.wait(); // Wait until notify() is called
+                char answer = submitButtonResult.charAt(0);
+                if (answer == 'y' || answer == 'Y') {
+                    tryAgain = true;
+                    systemTextLabel.setVisible(false);
+                }
+
+                return tryAgain;
+            }
+        }
+    }
+
+
 
 }
