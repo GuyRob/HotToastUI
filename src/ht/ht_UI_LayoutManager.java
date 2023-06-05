@@ -309,7 +309,7 @@ public class ht_UI_LayoutManager {
     }
 
     public static int drinkUI () throws InterruptedException {
-        activeTextLabel.setText("<html><font color='black'>Would you like to add drinks? (y/n)</font></html>");         // Add text
+        activeTextLabel.setText("<html><font color='black'>Would you like to add drink? (y/n)</font></html>");         // Add text
 
         int DRINK_PRICE = 8;
         String[] DRINK_NAMES = {"cola", "fanta"};
@@ -352,8 +352,8 @@ public class ht_UI_LayoutManager {
                                 activeTextLabel.setText("<html><font color='black'>Which drink you want to add?</font></html>");         // Add text
                                 validDrink = false;
                             }
+                            /** @ANOTHERDRINK */
                         }
-                         /** @ANOTHERDRINK */
 
                     }
 
@@ -385,7 +385,5 @@ public class ht_UI_LayoutManager {
             }
         }
     }
-
-
 
 }
