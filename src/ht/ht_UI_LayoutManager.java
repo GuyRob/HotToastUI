@@ -220,7 +220,6 @@ public class ht_UI_LayoutManager {
 
                 // Ask again - 1
                 if (answer != 'y' && answer != 'Y') {
-//                    System.out.println(ANSI_YELLOW + "We have a good extras, want to try?" + ANSI_RESET);
                     showSystemText("<html><font color='orange'>We have a good extras, want to try?</font></html>", 3);
                     lock.wait();  // Wait until notify() is called
                     inpAnswer = submitButtonResult;
@@ -228,7 +227,6 @@ public class ht_UI_LayoutManager {
 
                     // Ask again - 2
                     if (answer != 'y' && answer != 'Y') {
-//                        System.out.println(ANSI_YELLOW + "Listen you must try it, add at least one?" + ANSI_RESET);
                         showSystemText("<html><font color='orange'>Listen you must try it, add at least one?</font></html>", 3);
 
                         lock.wait();  // Wait until notify() is called
@@ -275,7 +273,7 @@ public class ht_UI_LayoutManager {
                             answer = inpAnswer.charAt(0);
 
                             if (answer == 'y' || answer == 'Y') {
-                                activeTextLabel.setText("<html><font color='black'>Which extra you want to add?</font></html>");         // Add text
+                                activeTextLabel.setText("<html><font color='black'>Which extra you want to add?  " + EXTRAS_MENU.keySet() + "</font></html>");         // Add text
                                 validExtra = false;
 
                             }
@@ -309,7 +307,7 @@ public class ht_UI_LayoutManager {
     }
 
     public static int drinkUI () throws InterruptedException {
-        activeTextLabel.setText("<html><font color='black'>Would you like to add drinks? (y/n)</font></html>");         // Add text
+        activeTextLabel.setText("<html><font color='black'>Would you like to add drink? (y/n)</font></html>");         // Add text
 
         int DRINK_PRICE = 8;
         String[] DRINK_NAMES = {"cola", "fanta"};
@@ -345,15 +343,15 @@ public class ht_UI_LayoutManager {
                             showSystemText("<html><font color='red'>Please enter a valid one drink!</font></html>", 3);
                         } else {
                             /** @ANOTHERDRINK - Enable/Disable another drink option: */
-                            activeTextLabel.setText("<html><font color='black'>Do you want to add another drink? (y/n)</font></html>");         // Add text
-                            lock.wait(); // Wait until notify() is called
-                            answer = submitButtonResult.charAt(0);
-                            if (answer == 'y' || answer == 'Y') {
-                                activeTextLabel.setText("<html><font color='black'>Which drink you want to add?</font></html>");         // Add text
-                                validDrink = false;
-                            }
+//                            activeTextLabel.setText("<html><font color='black'>Do you want to add another drink? (y/n)</font></html>");
+//                            lock.wait(); // Wait until notify() is called
+//                            answer = submitButtonResult.charAt(0);
+//                            if (answer == 'y' || answer == 'Y') {
+//                                activeTextLabel.setText("<html><font color='black'>Which drink you want to add?</font></html>");
+//                                validDrink = false;
+//                            }
+                            /** @ANOTHERDRINK */
                         }
-                         /** @ANOTHERDRINK */
 
                     }
 
@@ -369,7 +367,6 @@ public class ht_UI_LayoutManager {
         boolean tryAgain = false;
         int TOASTPRICE = 15;
         int totalPrice = TOASTPRICE + ageDiscount + extrasPrice + drinksPrice;
-        System.out.println("Total for your toast: $" + totalPrice);
         activeTextLabel.setText("<html><font color='green'>Total for your toast: $" + totalPrice + "</font><font color='navy'>\t[Do you want to order again? (y/n)]</font></html>");
 
         synchronized (lock) { // LOCK
@@ -385,7 +382,5 @@ public class ht_UI_LayoutManager {
             }
         }
     }
-
-
 
 }
